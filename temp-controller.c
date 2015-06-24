@@ -61,7 +61,6 @@ act_on_temperature(double set_point)
     if (new_on > 0 && time(NULL) - last_off < ASD_SECS) {
 	fprintf(stderr, "ASD triggered\n");
     } else if (new_on >= 0) {
-	printf("turning %s\n", new_on ? "on" : "off");
 	is_on = new_on;
 	piface_set(piface, 0, is_on == 1);
 	if (! is_on) last_off = time(NULL);
