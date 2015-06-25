@@ -13,7 +13,6 @@
 
 #define ASD_SECS 60
 #define SLEEP_SECS 15
-#define RANGE 0.5
 
 piface_t *piface;
 double temperature = INVALID_LOW;
@@ -24,6 +23,7 @@ typedef enum { TYPE_DOUBLE, TYPE_STRING } type_t;
 
 static const char *temperature_fname = NULL;
 static double target_temperature = 60;
+static double delta_above = 0.5, delta_below = 0.5;
 
 static const struct {
     const char *name;
@@ -32,6 +32,8 @@ static const struct {
 } params[] = {
     { "temperature_filename",	TYPE_STRING,	&temperature_fname },
     { "target_temperature",	TYPE_DOUBLE,	&target_temperature },
+    { "delta_above",		TYPE_DOUBLE,	&delta_above },
+    { "delta_below",		TYPE_DOUBLE,	&delta_below },
 };
 
 #define N_PARAMS (sizeof(params) / sizeof(params[0]))
@@ -115,11 +117,11 @@ act_on_temperature()
     int new_on = -1;
 
     if (is_on < 0) {
-	if (temperature > target_temperature + RANGE) new_on = 1;
+	if (temperature > target_temperature + delta_above) new_on = 1;
 	else new_on = 0;
     } else {
-	if (is_on && temperature < target_temperature - RANGE) new_on = 0;
-	if (! is_on && temperature > target_temperature + RANGE) new_on = 1;
+	if (is_on && temperature < target_temperature - delta_below) new_on = 0;
+	if (! is_on && temperature > target_temperature + delta_above) new_on = 1;
     }
 
     if (new_on > 0 && time(NULL) - last_off < ASD_SECS) {
@@ -142,6 +144,10 @@ main(int argc, char **argv)
     read_parameters(argv[1]);
 
     piface = piface_new();
+    if (! piface) {
+	fprintf(stderr, "failed to initialize piface\n");
+	exit(1);
+    }
 
     while (1) {
 	read_temperature();
