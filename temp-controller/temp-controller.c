@@ -5,8 +5,8 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include "../lib/mem.h"
-#include "../lib/piface.h"
+#include "lib/mem.h"
+#include "lib/piface.h"
 
 #define INVALID_LOW 32
 #define INVALID_HIGH 185
