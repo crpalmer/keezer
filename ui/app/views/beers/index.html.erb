@@ -7,7 +7,8 @@
     <tr>
       <td style="border: 1px white solid"><%= beer.name %></td>
       <td style="border: 1px white solid"><%= beer.brewer %></td>
-      <td><%= link_to 'edit', edit_beer_path(:id => beer.id) %></td>
+      <td><%= link_to 'edit', edit_beer_path(beer) %></td>
+      <td><%= link_to 'delete', beer_path(beer), method: :delete %></td>
     </tr>
   <% end %>
   <tr>
