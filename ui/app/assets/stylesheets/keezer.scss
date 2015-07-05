@@ -1,3 +1,159 @@
-// Place all the styles related to the keezer controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+body {
+        background-color: #000000;
+        background-size: cover;
+        background-repeat:no-repeat;
+        overflow: hidden;
+        color: #FFFFFF;
+        font: 1.5em Georgia, arial, verdana, sans-serif;
+        margin:5px;
+}
+
+.main-table {
+	border: 5px solid white;
+	width: 100%;
+	height: 90%;
+	border-collapse: collapse;
+}
+
+.filled {
+	width: 100%;
+	height: 100%;
+}
+
+.border {
+	border-left-style: solid;
+	border-left-size: 5px;
+	border-left-color: white;
+	border-right-style: solid;
+	border-right-size: 5px;
+	border-right-color: white;
+}
+
+/* Meta info */
+.beer-info {
+	width: 100%;
+	text-align: top;
+}
+.tap-numbers {
+	background-color: #ff0000;
+	text-align: center;
+	font-size: 135%;
+	height: 10%;
+	padding: 10px 10px;
+}
+.tap-number {
+	width: 25%;
+	border: 5px white solid;
+}
+
+.beer-name {
+	font-size: 90%;
+	font-style: bold;
+	padding: 5px 5px 15px 5px;
+	vertical-align: top;
+	background-color: #337733;
+	text-align: center;
+}
+.brewer {
+	font-size: 50%;
+	font-style: italic;
+	padding: 5px 15px 5px 15px;
+	background-color: #003300;
+}
+.beer-style {
+	font-size: 50%;
+	padding: 0px 15px 5px 15px;
+	font-style: italic;
+	background-color: #003300;
+}
+
+/* Stats */
+.beer-stats {
+	width: 100%;
+	text-align: bottom;
+}
+.stats-text {
+	font-size: 66%;
+	font-style: bold;
+	text-align: center;
+	padding-bottom: 10px;
+}
+.ibu {
+	width: 50%;
+}
+.srm {
+	width: 50%;
+}
+.ibu-container{
+        position: relative;
+        height:100px;
+        width:53px;
+        margin: 0 auto;
+}
+.ibu-indicator{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: image-url('ibu-stroke.png') no-repeat bottom left;
+}
+.ibu-indicator .ibu-full{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: image-url('ibu-full.png') no-repeat bottom left;
+}
+.srm-container{
+        position: relative;
+        height: 100px;
+        width: 55px;
+        margin: 0 auto;
+}
+
+.srm-indicator{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
+
+        -webkit-mask-image: image-url('srm-pint-mask.png');
+        -o-mask-image: image-url('srm-pint-mask.png');
+        -moz-mask-image: image-url('srm-pint-mask.png');
+        mask-image: image-url('srm-pint-mask.png');
+}
+
+.srm-stroke{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 2;
+
+        background: image-url('srm-pint-stroke.png')
+}
+
+.abv-container{
+        position: relative;
+        height: 100px;
+        width: 115px;
+        margin: 8px auto;
+}
+.abv-indicator{
+        display: inline-block;
+        position: relative;
+        height:100%;
+        width:50%;
+        background: image-url('abv-stroke.png') no-repeat bottom left;
+}
+.abv-indicator .abv-full{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: image-url('abv-full.png') no-repeat bottom left;
+}
