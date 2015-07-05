@@ -124,4 +124,7 @@
     <td class="temperature-text">Keezer: Temperature <%= keezer_temperature %>, Tower <%= tower_temperature %></td>
     <td class="temperature-text">Fermenter: Chamber <%= chamber_temperature %>, Wort <%= wort_temperature %></td>
   </tr>
+  <tr>
+    <td class="date" colspan="2"><%= Time.now.strftime("%d/%m/%Y %H:%M:%S") %></td>
+  </tr>
 </table>
