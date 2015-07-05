@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  brewer: MyString
+  style: MyString
+  ibu: 9.99
+  srm: 9.99
+  abv: 9.99
+
+two:
+  name: MyString
+  brewer: MyString
+  style: MyString
+  ibu: 9.99
+  srm: 9.99
+  abv: 9.99
