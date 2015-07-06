@@ -1,0 +1,11 @@
+<% @taps.each do |tap| %>
+  <%= form_for :tap, url: tap_path(tap), method: :patch do |f| %>
+    <p>
+      <div>Tap <%= tap.tap_number %></div>
+      <div><%= f.collection_select :beer_id, @beers, :id, :name, :include_blank => true, :selected => tap.beer_id %></div>
+      <div><%= f.submit %></div>
+    </p>
+  <% end %>
+<% end %>
+<%= link_to 'New tap', taps_path, method: :post %>
+<%= link_to 'Delete tap', tap_path(@taps.last), method: :delete %>
