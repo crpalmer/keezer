@@ -1,123 +1,57 @@
 <body class="list-body">
 <table class="main-table" style="height: 80%">
   <tr class="tap-numbers">
-    <td class="tap-number">Tap 1</td>
-    <td class="tap-number">Tap 2</td>
-    <td class="tap-number">Tap 3</td>
-    <td class="tap-number">Tap 4</td>
+    <% @taps.each do |tap| %>
+      <td class="tap-number" style="width: <%= 100 / @taps.length %>%">
+        Tap <%= tap.tap_number %>
+      </td>
+    <% end %>
   </tr>
   <tr class="beer-info border">
-    <td class="border beer-name">Welcome Back Pale Ale</td>
-    <td class="border beer-name">Hairy Bitch in Heat</td>
-    <td class="border beer-name">Sierra Nevada Pale Ale</td>
-    <td class="border beer-name">Head Hunter</td>
+    <% @taps.each do |tap| %>
+      <td class="border beer-name"><%= tap.beer.name %></td>
+    <% end %>
   </tr>
   <tr class="beer-info border">
-    <td class="border">
-      <div class="brewer">Chris</div>
-      <div class="beer-style">American Pale Ale</div>
-    </td>
-    <td class="border">
-      <div class="brewer">Carrie, Chris, Felix</div>
-      <div class="beer-style">American IPA</div>
-    </td>
-    <td class="border">
-      <div class="brewer">Sierra Nevada</div>
-      <div class="beer-style">American Pale Ale</div>
-    </td>
-    <td class="border">
-      <div class="brewer">Fat Head's</div>
-      <div class="beer-style">American IPA</div>
-    </td>
+    <% @taps.each do |tap| %>
+      <td class="border">
+	<div class="brewer"><%= tap.beer.brewer %></div>
+	<div class="beer-style"><%= tap.beer.style %></div>
+      </td>
+    <% end %>
   </tr>
   <tr>
-    <td class="border"><table class="filled"><tr>
-      <td class="ibu">
-	<div class="stats-text">IBU: 34</div>
-        <div class="ibu-container">
-	  <div class="ibu-indicator"/>
-	  <div class="ibu-full" style="height:34%"/>
-	</div>
-      </td>
-      <td class="srm">
-	<div class="stats-text">SRM: 8</div>
-	<div class="srm-container">
-	  <div class="srm-indicator" style="background-color: rgb(191,146,59)"></div>
-	  <div class="srm-stroke"/>
-	</div>
-      </td>
-    </tr></table></td>
-    <td class="border"><table class="filled"><tr>
-      <td class="ibu">
-	<div class="stats-text">IBU: 66</div>
-        <div class="ibu-container">
-	  <div class="ibu-indicator"/>
-	  <div class="ibu-full" style="height:66%"/>
-	</div>
-      </td>
-      <td class="srm">
-	<div class="stats-text">SRM: 7</div>
-	<div class="srm-container">
-	  <div class="srm-indicator" style="background-color: rgb(201,167,50)"></div>
-	  <div class="srm-stroke"/>
-	</div>
-      </td>
-    </tr></table></td>
-    <td class="border"><table class="filled"><tr>
-      <td class="ibu">
-	<div class="stats-text">IBU: 37</div>
-        <div class="ibu-container">
-	  <div class="ibu-indicator"/>
-	  <div class="ibu-full" style="height:37%"/>
-	</div>
-      </td>
-      <td class="srm">
-	<div class="stats-text">SRM: 10</div>
-	<div class="srm-container">
-	  <div class="srm-indicator" style="background-color: rgb(191,129,58)"></div>
-	  <div class="srm-stroke"/>
-	</div>
-      </td>
-    </tr></table></td>
-    <td class="border"><table class="filled"><tr>
-      <td class="ibu">
-	<div class="stats-text">IBU: 87</div>
-        <div class="ibu-container">
-	  <div class="ibu-indicator"/>
-	  <div class="ibu-full" style="height:87%"/>
-	</div>
-      </td>
-      <td class="srm">
-	<div class="stats-text">SRM: 7.5</div>
-	<div class="srm-container">
-	  <div class="srm-indicator" style="background-color: rgb(200,158,60)"></div>
-	  <div class="srm-stroke"/>
-	</div>
-      </td>
-    </tr></table></td>
+    <% @taps.each do |tap| %>
+      <td class="border"><table class="filled"><tr>
+	<% if tap.beer.ibu %>
+	  <td class="ibu">
+	    <div class="stats-text">IBU: <%= tap.beer.ibu %></div>
+	    <div class="ibu-container">
+	      <div class="ibu-indicator"/>
+	      <div class="ibu-full" style="height: <%= tap.beer.ibu %>%"/>
+	    </div>
+	  </td>
+	  <td class="srm">
+	    <div class="stats-text">SRM: <%= tap.beer.srm %></div>
+	    <div class="srm-container">
+	      <div class="srm-indicator" style="background-color: rgb(<%= srm2rgb(tap.beer.srm).join(',') %>)"></div>
+	      <div class="srm-stroke"/>
+	    </div>
+	  </td>
+        <% end %>
+      </tr></table></td>
+    <% end %>  
   </tr>
   <tr>
-    <td class="border"><table class="filled"><tr>
-      <td class="ibu">
-	<div class="stats-text">ABV: 5.6%</div>
-      </td>
-    </tr></table></td>
-    <td class="border"><table class="filled"><tr>
-      <td class="ibu">
-	<div class="stats-text">ABV: 6.6%</div>
-      </td>
-    </tr></table></td>
-    <td class="border"><table class="filled"><tr>
-      <td class="ibu">
-	<div class="stats-text">ABV: 5.6%</div>
-      </td>
-    </tr></table></td>
-    <td class="border"><table class="filled"><tr>
-      <td class="ibu">
-	<div class="stats-text">ABV: 7.5%</div>
-	</div>
-      </td>
-    </tr></table></td>
+    <% @taps.each do |tap| %>
+      <td class="border"><table class="filled"><tr>
+	<% if tap.beer.abv %>
+	  <td class="ibu">
+	    <div class="stats-text">ABV: <%= tap.beer.abv %>%</div>
+	  </td>
+        <% end %>
+      </tr></table></td>
+    <% end %>
   </tr>
 </table>
 <table class="temperatures">
