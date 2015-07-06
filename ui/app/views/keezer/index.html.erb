@@ -44,13 +44,21 @@
   </tr>
   <tr>
     <% @taps.each do |tap| %>
-      <td class="border"><table class="filled"><tr>
+      <td class="border">
 	<% if tap.beer.abv %>
-	  <td class="ibu">
-	    <div class="stats-text">ABV: <%= tap.beer.abv %>%</div>
-	  </td>
+	  <div class="stats-text">ABV: <%= tap.beer.abv %>%</div>
+	  <table class="filled"><tr>
+	    <% abv = tap.beer.abv; while abv > 0 %>
+	      <td>
+	        <div class="abv-container">
+		  <div class="abv-indicator"/>
+		  <div class="abv-full" style="height: <%= (abv > 5 ? 5 : abv) * 100 / 5.0 %>%"/>
+		</div>
+	      </td>
+	    <% abv -= 5; end %>
+	  </tr></table></td>
         <% end %>
-      </tr></table></td>
+      </td>
     <% end %>
   </tr>
 </table>
