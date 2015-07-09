@@ -1,11 +1,9 @@
 #!/bin/bash
 
-lxpanel --profile LXDE
-pcmanfm --desktop --profile LXDE
-xscreensaver -no-splash
-
+(
 xset s off
 xset -dpms
 xset s noblank
 mkdir /tmp/keeezer-temporary-dir
-chromium --user-data-dir=/tmp/keezer-temporary-dir --kiosk http://pi:3000
+chromium --user-data-dir=/tmp/keezer-temporary-dir --kiosk http://127.0.0.1:3000
+) > /tmp/chromium.log 2>&1

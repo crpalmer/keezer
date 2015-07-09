@@ -1,8 +1,17 @@
-#!/bin/sh
+#!/bin/bash
+
+# Add this to /etc/rc.local:
+#
+# sudo -u crpalmer /opt/keezer/run-ui.sh
+
+(
+source /home/crpalmer/.rvm/scripts/rvm
+rvm use ruby
 
 cd /home/crpalmer/keezer/ui
 while true
 do
-    sudo -u crpalmer ./bin/rails server -b 0.0.0.0
+    ./bin/rails server -b 0.0.0.0
     sleep 2
 done
+) > /tmp/keezer.log 2>&1
