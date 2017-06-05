@@ -6,7 +6,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "lib/mem.h"
-#include "lib/piface.h"
+#include "lib/gpio.h"
 
 #define INVALID_LOW 32
 #define INVALID_HIGH 185
@@ -14,7 +14,7 @@
 #define ASD_SECS 60
 #define SLEEP_SECS 15
 
-piface_t *piface;
+gpio_t *gpio;
 double temperature = INVALID_LOW;
 double fridge_temperature = INVALID_LOW;
 double current_target;
@@ -44,6 +44,11 @@ static const struct {
     { "pid_threshold",		TYPE_DOUBLE,	&pid_threshold },
     { "pid_factor",		TYPE_DOUBLE,	&pid_factor },
     { "minimum_temperature",	TYPE_DOUBLE,	&minimum_temperature },
+};
+
+#define FRIDGE_ID 0
+static gpio_table_t gpio_table[] = {
+    { "fridge", 17, 0 }
 };
 
 #define N_PARAMS (sizeof(params) / sizeof(params[0]))
@@ -146,7 +151,7 @@ act_on_temperature_set_point(double temp, double target)
 	fprintf(stderr, "ASD triggered\n");
     } else if (new_on >= 0) {
 	is_on = new_on;
-	piface_set(piface, 0, is_on == 1);
+	gpio_set_id(gpio, FRIDGE_ID, is_on == 1);
 	if (! is_on) last_off = time(NULL);
     }
 }
@@ -189,9 +194,8 @@ main(int argc, char **argv)
 
     read_parameters(argv[1]);
 
-    piface = piface_new();
-    if (! piface) {
-	fprintf(stderr, "failed to initialize piface\n");
+    if ((gpio = gpio_new(gpio_table, 1)) == NULL) {
+	fprintf(stderr, "Failed to initialize gpios\n");
 	exit(1);
     }
 
