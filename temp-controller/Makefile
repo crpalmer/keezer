@@ -1,4 +1,4 @@
-LIBS=~/lib/lib.a -lusb
+LIBS=~/lib/lib.a -lusb -lpthread
 CFLAGS=-Wall -Werror --std=c99 -I/home/crpalmer
 
 OBJS = temp-controller.o
