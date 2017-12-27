@@ -17,6 +17,7 @@
 gpio_t *gpio;
 double temperature = INVALID_LOW;
 double fridge_temperature = INVALID_LOW;
+double action_temperature = INVALID_LOW;
 double current_target;
 int is_on = -1;
 time_t last_off = 0;
@@ -31,6 +32,7 @@ static double pid_threshold = 0;
 static double pid_factor = 2;
 static double minimum_temperature = 33;
 static bool heater_mode = false;
+static bool single_temperature = false;
 
 static const struct {
     const char *name;
@@ -46,6 +48,7 @@ static const struct {
     { "pid_factor",		TYPE_DOUBLE,	&pid_factor },
     { "minimum_temperature",	TYPE_DOUBLE,	&minimum_temperature },
     { "heater_mode",		TYPE_BOOLEAN,	&heater_mode },
+    { "single_temperature",	TYPE_BOOLEAN,	&single_temperature },
 };
 
 #define FRIDGE_ID 0
@@ -137,7 +140,7 @@ read_temperature(const char *fname, double *temp)
 static void
 log_temperature()
 {
-    printf("%lu %.3f %d %.3f %.3f\n", (unsigned long) time(NULL), current_target, is_on, temperature, fridge_temperature);
+    printf("%lu %.3f %d %.3f %.3f %.3f\n", (unsigned long) time(NULL), current_target, is_on, temperature, fridge_temperature, action_temperature);
     fflush(stdout);
 }
 
@@ -191,7 +194,7 @@ act_on_temperature_set_point(double temp, double target)
 }
 
 static double
-select_fridge_temperature(double *temp)
+select_fridge_temperature_dual(double *temp)
 {
     double target;
     double delta;
@@ -203,20 +206,50 @@ select_fridge_temperature(double *temp)
     } else {
 	*temp = fridge_temperature;
     }
-    delta = delta_sign * (temperature - target_temperature);
+    delta = delta_sign * (*temp - target_temperature);
     if (delta < pid_threshold) return target_temperature;
     target = target_temperature - delta_sign * delta * pid_factor;
     if (target < minimum_temperature) return minimum_temperature;
     return target;
 }
 
+static double
+select_fridge_temperature_single(double *temp)
+{
+    int n = 0;
+    double T = 0;
+
+    if (temperature_is_valid(temperature)) {
+	T += temperature;
+	n ++;
+    }
+
+    if (temperature_is_valid(fridge_temperature)) {
+	T += fridge_temperature;
+	n ++;
+    }
+
+    if (! n) {
+	*temp = target_temperature;
+    } else {
+	*temp = T / n;
+    }
+
+    return target_temperature;
+}
+
+static double
+select_fridge_temperature(double *temp)
+{
+    if (single_temperature) return select_fridge_temperature_single(temp);
+    else return select_fridge_temperature_dual(temp);
+}
+
 static void
 act_on_temperature()
 {
-    double temp;
-
-    current_target = select_fridge_temperature(&temp);
-    act_on_temperature_set_point(temp, current_target);
+    current_target = select_fridge_temperature(&action_temperature);
+    act_on_temperature_set_point(action_temperature, current_target);
 }
 
 int
