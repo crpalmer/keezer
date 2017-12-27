@@ -21,7 +21,7 @@ double current_target;
 int is_on = -1;
 time_t last_off = 0;
 
-typedef enum { TYPE_DOUBLE, TYPE_STRING } type_t;
+typedef enum { TYPE_BOOLEAN, TYPE_DOUBLE, TYPE_STRING } type_t;
 
 static const char *temperature_fname = NULL;
 static const char *fridge_temperature_fname = NULL;
@@ -30,6 +30,7 @@ static double delta_above = 0.5, delta_below = 0.5;
 static double pid_threshold = 0;
 static double pid_factor = 2;
 static double minimum_temperature = 33;
+static bool heater_mode = false;
 
 static const struct {
     const char *name;
@@ -44,6 +45,7 @@ static const struct {
     { "pid_threshold",		TYPE_DOUBLE,	&pid_threshold },
     { "pid_factor",		TYPE_DOUBLE,	&pid_factor },
     { "minimum_temperature",	TYPE_DOUBLE,	&minimum_temperature },
+    { "heater_mode",		TYPE_BOOLEAN,	&heater_mode },
 };
 
 #define FRIDGE_ID 0
@@ -88,6 +90,11 @@ read_parameters(const char *fname)
 		     break;
 		case TYPE_DOUBLE:
 		    *(double *) params[i].value = atof(value);
+		    break;
+		case TYPE_BOOLEAN:
+		    if (strcmp(value, "true") == 0) *(bool *) params[i].value = true;
+		    else if (strcmp(value, "false") == 0) *(bool *) params[i].value = false;
+		    else printf("Invalid boolean [%s] for [%s]\n", name, value);
 		    break;
 	        }
 	    }
@@ -134,8 +141,8 @@ log_temperature()
     fflush(stdout);
 }
 
-static void
-act_on_temperature_set_point(double temp, double target)
+static int
+action_for_fridge(double temp, double target)
 {
     int new_on = -1;
 
@@ -146,6 +153,33 @@ act_on_temperature_set_point(double temp, double target)
 	if (is_on && temp < target - delta_below) new_on = 0;
 	if (! is_on && temp > target + delta_above) new_on = 1;
     }
+
+    return new_on;
+}
+
+static int
+action_for_heater(double temp, double target)
+{
+    int new_on = -1;
+
+    if (is_on < 0) {
+	if (temp < target - delta_below) new_on = 1;
+	else new_on = 0;
+    } else {
+	if (is_on && temp > target + delta_above) new_on = 0;
+	if (! is_on && temp < target - delta_below) new_on = 1;
+    }
+
+    return new_on;
+}
+
+static void
+act_on_temperature_set_point(double temp, double target)
+    {
+    int new_on;
+
+    if (heater_mode) new_on = action_for_heater(temp, target);
+    else new_on = action_for_fridge(temp, target);
 
     if (new_on > 0 && time(NULL) - last_off < ASD_SECS) {
 	fprintf(stderr, "ASD triggered\n");
@@ -161,6 +195,7 @@ select_fridge_temperature(double *temp)
 {
     double target;
     double delta;
+    double delta_sign = heater_mode ? -1 : +1;
 
     if (! temperature_is_valid(fridge_temperature)) {
 	*temp = temperature;
@@ -168,9 +203,9 @@ select_fridge_temperature(double *temp)
     } else {
 	*temp = fridge_temperature;
     }
-    delta = temperature - target_temperature;
+    delta = delta_sign * (temperature - target_temperature);
     if (delta < pid_threshold) return target_temperature;
-    target = target_temperature - delta * pid_factor;
+    target = target_temperature - delta_sign * delta * pid_factor;
     if (target < minimum_temperature) return minimum_temperature;
     return target;
 }
