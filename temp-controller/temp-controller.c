@@ -19,6 +19,7 @@ double temperature = INVALID_LOW;
 double fridge_temperature = INVALID_LOW;
 double action_temperature = INVALID_LOW;
 double current_target;
+double asd_seconds = ASD_SECS;
 int is_on = -1;
 time_t last_off = 0;
 
@@ -49,6 +50,7 @@ static const struct {
     { "minimum_temperature",	TYPE_DOUBLE,	&minimum_temperature },
     { "heater_mode",		TYPE_BOOLEAN,	&heater_mode },
     { "single_temperature",	TYPE_BOOLEAN,	&single_temperature },
+    { "asd_seconds",		TYPE_DOUBLE,	&asd_seconds },
 };
 
 #define FRIDGE_ID 0
@@ -184,7 +186,7 @@ act_on_temperature_set_point(double temp, double target)
     if (heater_mode) new_on = action_for_heater(temp, target);
     else new_on = action_for_fridge(temp, target);
 
-    if (new_on > 0 && time(NULL) - last_off < ASD_SECS) {
+    if (new_on > 0 && time(NULL) - last_off < asd_seconds) {
 	fprintf(stderr, "ASD triggered\n");
     } else if (new_on >= 0) {
 	is_on = new_on;
