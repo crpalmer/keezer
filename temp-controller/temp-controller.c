@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include "lib/mem.h"
 #include "lib/gpio.h"
+#include "lib/server.h"
+#include "lib/string-utils.h"
 #include "lib/time-utils.h"
 
 #define INVALID_LOW 32
@@ -289,10 +291,27 @@ temperature_main(void *unused)
     return NULL;
 }
 
+static char *
+server_cmd(void *unused, const char *cmd, struct sockaddr_in *addr, size_t addrlen)
+{
+    char *response = NULL;
+
+    if (strcmp(cmd, "get_temperatures") == 0) {
+	pthread_mutex_lock(&temp_lock);
+	response = maprintf("%.3f %.3f %.3f %.3f %.3f", target_temperature, temperature, fridge_temperature, keezer_temperature, tower_temperature);
+	pthread_mutex_unlock(&temp_lock);
+    }
+
+    if (response == NULL) response = maprintf("invalid command: %s", cmd);
+
+    return response;
+}
+
 int
 main(int argc, char **argv)
 {
-    pthread_t temp_thread;
+    pthread_t temp_thread, server_thread;
+    server_args_t server_args = { 4567, server_cmd, NULL };
 
     if (argc != 2) {
 	fprintf(stderr, "usage: config-file\n");
@@ -303,6 +322,7 @@ main(int argc, char **argv)
 
     pthread_mutex_init(&temp_lock, NULL);
     pthread_create(&temp_thread, NULL, temperature_main, NULL);
+    pthread_create(&server_thread, NULL, server_thread_main, &server_args);
 
     if ((gpio = gpio_new(gpio_table, 1)) == NULL) {
 	fprintf(stderr, "Failed to initialize gpios\n");
