@@ -128,7 +128,7 @@ temperature_is_valid(double temp)
 }
 
 static void
-read_temperature(const char *fname, double *temp)
+read_temperature(const char *what, const char *fname, double *temp)
 {
     double new_temp;
     FILE *f;
@@ -141,13 +141,13 @@ read_temperature(const char *fname, double *temp)
     }
 
     if (fscanf(f, "%lf", &new_temp) != 1) {
-	fprintf(stderr, "warning: failed to read temperature from %s\n", fname);
+	fprintf(stderr, "warning: failed to read %s temperature from %s\n", what, fname);
     } else if (temperature_is_valid(new_temp)) {
 	pthread_mutex_lock(&temp_lock);
 	*temp = new_temp;
 	pthread_mutex_unlock(&temp_lock);
     } else {
-	fprintf(stderr, "warning: invalid temp read: %f\n", new_temp);
+	fprintf(stderr, "warning: invalid %s temp read: %f\n", what, new_temp);
     }
 
     fclose(f);
@@ -279,10 +279,10 @@ temperature_main(void *unused)
 	nano_gettime(&sleep_time);
 	nano_add_ms(&sleep_time, TEMP_UPDATE_MS);
 
-	read_temperature(temperature_fname, &temperature);
-	read_temperature(fridge_temperature_fname, &fridge_temperature);
-	read_temperature(keezer_temperature_fname, &keezer_temperature);
-	read_temperature(tower_temperature_fname, &tower_temperature);
+	read_temperature("temperature", temperature_fname, &temperature);
+	read_temperature("fridge", fridge_temperature_fname, &fridge_temperature);
+	read_temperature("keezer", keezer_temperature_fname, &keezer_temperature);
+	read_temperature("tower", tower_temperature_fname, &tower_temperature);
 	log_temperature();
 
 	nano_sleep_until(&sleep_time);
