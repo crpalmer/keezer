@@ -22,6 +22,8 @@ gpio_t *gpio;
 double temperature = INVALID_LOW;
 double fridge_temperature = INVALID_LOW;
 double action_temperature = INVALID_LOW;
+static double keezer_temperature = INVALID_LOW;
+static double tower_temperature = INVALID_LOW;
 double current_target;
 double asd_seconds = ASD_SECS;
 int is_on = -1;
@@ -31,6 +33,8 @@ typedef enum { TYPE_BOOLEAN, TYPE_DOUBLE, TYPE_STRING } type_t;
 
 static const char *temperature_fname = NULL;
 static const char *fridge_temperature_fname = NULL;
+static const char *keezer_temperature_fname = NULL;
+static const char *tower_temperature_fname = NULL;
 static double target_temperature = 60;
 static double delta_above = 0.5, delta_below = 0.5;
 static double pid_threshold = 0;
@@ -46,6 +50,8 @@ static const struct {
 } params[] = {
     { "temperature_filename",	TYPE_STRING,	&temperature_fname },
     { "fridge_temperature_filename", TYPE_STRING, &fridge_temperature_fname },
+    { "keezer_temperature_filename",	TYPE_STRING,	&keezer_temperature_fname },
+    { "tower_temperature_filename",	TYPE_STRING,	&tower_temperature_fname },
     { "target_temperature",	TYPE_DOUBLE,	&target_temperature },
     { "delta_above",		TYPE_DOUBLE,	&delta_above },
     { "delta_below",		TYPE_DOUBLE,	&delta_below },
@@ -148,7 +154,7 @@ read_temperature(const char *fname, double *temp)
 static void
 log_temperature()
 {
-    printf("%lu %.3f %d %.3f %.3f %.3f\n", (unsigned long) time(NULL), current_target, is_on, temperature, fridge_temperature, action_temperature);
+    printf("%lu %.3f %d %.3f %.3f %.3f || %.3f %.3f\n", (unsigned long) time(NULL), current_target, is_on, temperature, fridge_temperature, action_temperature, keezer_temperature, tower_temperature);
     fflush(stdout);
 }
 
@@ -273,6 +279,8 @@ temperature_main(void *unused)
 
 	read_temperature(temperature_fname, &temperature);
 	read_temperature(fridge_temperature_fname, &fridge_temperature);
+	read_temperature(keezer_temperature_fname, &keezer_temperature);
+	read_temperature(tower_temperature_fname, &tower_temperature);
 	log_temperature();
 
 	nano_sleep_until(&sleep_time);
