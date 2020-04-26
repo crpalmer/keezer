@@ -2,18 +2,22 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <malloc.h>
+#include <pthread.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
 #include "lib/mem.h"
 #include "lib/gpio.h"
+#include "lib/time-utils.h"
 
 #define INVALID_LOW 32
 #define INVALID_HIGH 185
 
 #define ASD_SECS 60
 #define SLEEP_SECS 15
+#define TEMP_UPDATE_MS	(5*1000)
 
+static pthread_mutex_t temp_lock;
 gpio_t *gpio;
 double temperature = INVALID_LOW;
 double fridge_temperature = INVALID_LOW;
@@ -131,7 +135,9 @@ read_temperature(const char *fname, double *temp)
     if (fscanf(f, "%lf", &new_temp) != 1) {
 	fprintf(stderr, "warning: failed to read temperature from %s\n", fname);
     } else if (temperature_is_valid(new_temp)) {
+	pthread_mutex_lock(&temp_lock);
 	*temp = new_temp;
+	pthread_mutex_unlock(&temp_lock);
     } else {
 	fprintf(stderr, "warning: invalid temp read: %f\n", new_temp);
     }
@@ -256,9 +262,30 @@ act_on_temperature()
     act_on_temperature_set_point(action_temperature, current_target);
 }
 
+static void *
+temperature_main(void *unused)
+{
+    while (1) {
+	struct timespec sleep_time;
+
+	nano_gettime(&sleep_time);
+	nano_add_ms(&sleep_time, TEMP_UPDATE_MS);
+
+	read_temperature(temperature_fname, &temperature);
+	read_temperature(fridge_temperature_fname, &fridge_temperature);
+	log_temperature();
+
+	nano_sleep_until(&sleep_time);
+    }
+
+    return NULL;
+}
+
 int
 main(int argc, char **argv)
 {
+    pthread_t temp_thread;
+
     if (argc != 2) {
 	fprintf(stderr, "usage: config-file\n");
 	exit(1);
@@ -266,16 +293,18 @@ main(int argc, char **argv)
 
     read_parameters(argv[1]);
 
+    pthread_mutex_init(&temp_lock, NULL);
+    pthread_create(&temp_thread, NULL, temperature_main, NULL);
+
     if ((gpio = gpio_new(gpio_table, 1)) == NULL) {
 	fprintf(stderr, "Failed to initialize gpios\n");
 	exit(1);
     }
 
     while (1) {
-	read_temperature(temperature_fname, &temperature);
-	read_temperature(fridge_temperature_fname, &fridge_temperature);
+	pthread_mutex_lock(&temp_lock);
 	act_on_temperature();
-	log_temperature();
+	pthread_mutex_unlock(&temp_lock);
 	sleep(SLEEP_SECS);
    }
 
