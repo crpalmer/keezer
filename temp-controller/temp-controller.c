@@ -180,7 +180,7 @@ action_for_heater(double temp, double target)
 
 static void
 act_on_temperature_set_point(double temp, double target)
-    {
+{
     int new_on;
 
     if (heater_mode) new_on = action_for_heater(temp, target);
@@ -188,10 +188,12 @@ act_on_temperature_set_point(double temp, double target)
 
     if (new_on > 0 && time(NULL) - last_off < asd_seconds) {
 	fprintf(stderr, "ASD triggered\n");
-    } else if (new_on >= 0) {
+    } else if (new_on >= 0 && new_on != is_on) {
 	is_on = new_on;
 	gpio_set_id(gpio, FRIDGE_ID, is_on == 1);
 	if (! is_on) last_off = time(NULL);
+	printf("%ld %s is now %s\n", time(NULL), heater_mode ? "heater" : "fridge", is_on ? "ON" : "OFF");
+	fflush(stdout);
     }
 }
 
