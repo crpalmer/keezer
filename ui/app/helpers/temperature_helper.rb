@@ -1,20 +1,24 @@
 require "socket"
 
 module TemperatureHelper
-  def get_temperatures
+  def server_command(cmd)
      connection = TCPSocket.open "0.0.0.0", 4567
      begin
-        connection.puts "get_temperatures"
-        connection.gets.split(" ").map { |v| v.to_f.round(1).to_s }
+        connection.puts cmd
+        connection.gets
      ensure
         connection.close
      end
+  end
+
+  def get_temperatures
+     server_command("get_temperatures").split(" ").map { |v| v.to_f }
      rescue
-	[ "???", "???", "???", "???", "???" ]
+	[ -1, -1, -1, -1, -1 ]
   end
 
   def target_temperature
-     get_temperatures[0].to_f.round(0).to_s
+     get_temperatures[0]
   end
 
   def keezer_temperature
