@@ -2,7 +2,7 @@
 
 # Add this to /etc/rc.local:
 #
-# sudo -u crpalmer /opt/keezer/run-ui.sh
+# su -l crpalmer /opt/keezer/run-ui.sh
 
 (
 source /home/crpalmer/.rvm/scripts/rvm

@@ -13,6 +13,10 @@ module TemperatureHelper
 	[ "???", "???", "???", "???", "???" ]
   end
 
+  def target_temperature
+     get_temperatures[0].to_f.round(0).to_s
+  end
+
   def keezer_temperature
      get_temperatures[3]
   end
