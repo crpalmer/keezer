@@ -1,25 +1,31 @@
+require "socket"
+
 module TemperatureHelper
+  def get_temperatures
+     connection = TCPSocket.open "0.0.0.0", 4567
+     begin
+        connection.puts "get_temperatures"
+        connection.gets.split(" ").map { |v| v.to_f.round(1).to_s }
+     ensure
+        connection.close
+     end
+     rescue
+	[ "???", "???", "???", "???", "???" ]
+  end
+
   def keezer_temperature
-    number_with_precision(File.read('/mnt/1wire/28.FF3DCC6B1403/temperature'), precision: 1)
-    rescue
-       '???'
+     get_temperatures[3]
   end
 
   def tower_temperature
-    number_with_precision(File.read('/mnt/1wire/28.FFAA976B1403/temperature'), precision: 1)
-    rescue
-       '???'
+     get_temperatures[4]
   end
 
   def chamber_temperature
-    number_with_precision(File.read('/mnt/1wire/28.FFCEBF6B1403/temperature'), precision: 1)
-    rescue
-       '???'
+     get_temperatures[2]
   end
 
   def wort_temperature
-    number_with_precision(File.read('/mnt/1wire/28.FFB6AD6B1403/temperature'), precision: 1)
-    rescue
-       '???'
+     get_temperatures[1]
   end
 end
