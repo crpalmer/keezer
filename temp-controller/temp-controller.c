@@ -302,6 +302,12 @@ server_cmd(void *unused, const char *cmd, struct sockaddr_in *addr, size_t addrl
 	pthread_mutex_unlock(&temp_lock);
     }
 
+    if (strcmp(cmd, "is_on") == 0) {
+	pthread_mutex_lock(&temp_lock);
+	response = maprintf("%s", is_on ? "true" : "false");
+	pthread_mutex_unlock(&temp_lock);
+    }
+
     if (response == NULL) response = maprintf("invalid command: %s", cmd);
 
     return response;

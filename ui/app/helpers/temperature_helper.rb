@@ -36,4 +36,8 @@ module TemperatureHelper
   def wort_temperature
      get_temperatures[1]
   end
+
+  def fridge_is_on
+     server_command("is_on").strip == "true"
+  end
 end

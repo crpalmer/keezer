@@ -64,8 +64,14 @@
 </table>
 <table class="temperatures">
   <tr>
-    <td class="temperature-text">Keezer: <%= keezer_temperature %>, Tower <%= tower_temperature %></td>
-    <td class="temperature-text">Fermenter [@ <%= target_temperature %>]: <%= chamber_temperature %>, Wort <%= wort_temperature %></td>
+    <td class="temperature-text">Keezer: <%= keezer_temperature.round(1) %>, Tower <%= tower_temperature.round(1) %></td>
+    <td class="temperature-text">
+      Fermenter [@ <%= target_temperature.round(0) %>]: <%= chamber_temperature.round(1) %>,
+      Wort <%= wort_temperature.round(1) %>
+      <% if fridge_is_on then %>
+        <b>COOLING</b> 
+      <% end %>
+    </td>
   </tr>
   <tr>
     <td class="date" colspan="2"><%= Time.now.strftime("%d/%m/%Y %H:%M:%S") %></td>
