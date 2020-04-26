@@ -14,4 +14,4 @@ do
     ./bin/rails server -b 0.0.0.0
     sleep 2
 done
-) > /tmp/keezer-ui.log 2>&1
+) > /tmp/keezer-ui.log 2>&1 &

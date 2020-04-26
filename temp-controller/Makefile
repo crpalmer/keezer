@@ -6,6 +6,9 @@ OBJS = temp-controller.o
 temp-controller: $(OBJS) $(LIB)
 	$(CC) $(OBJS) -o $@ $(LIBS)
 
+install:
+	cp temp-controller /opt/keezer/
+
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
 

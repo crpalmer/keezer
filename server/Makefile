@@ -1,4 +1,4 @@
-SCRIPTS = lxde-autostart.sh run-ui.sh refresh-chromium.sh \
+SCRIPTS = lxde-autostart.sh run-ui.sh run-temp-controller.sh refresh-chromium.sh \
 	  temp-controller-configs/ temp-controller.cfg
 
 install:
