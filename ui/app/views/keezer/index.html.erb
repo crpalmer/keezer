@@ -64,11 +64,15 @@
 </table>
 <table class="temperatures">
   <tr>
-    <td class="temperature-text">Keezer: <%= keezer_temperature.round(1) %>, Tower <%= tower_temperature.round(1) %></td>
     <td class="temperature-text">
-      Fermenter [@ <%= target_temperature.round(0) %>]: <%= chamber_temperature.round(1) %>,
-      Wort <%= wort_temperature.round(1) %>
-      <% if fridge_is_on then %>
+      Keezer: <%= @temperature.get_keezer_temperature.round(1) %>,
+      Tower <%= @temperature.get_tower_temperature.round(1) %>
+    </td>
+    <td class="temperature-text">
+      Fermenter [@ <%= @temperature.get_target_temperature.round(0) %>]:
+      <%= @temperature.get_chamber_temperature.round(1) %>,
+      Wort <%= @temperature.get_wort_temperature.round(1) %>
+      <% if @temperature.is_fridge_on then %>
         <b>COOLING</b> 
       <% end %>
     </td>
