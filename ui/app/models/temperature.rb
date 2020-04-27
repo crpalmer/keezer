@@ -1,6 +1,8 @@
 require "socket"
 
 class Temperature
+  include ActiveModel::Model
+
   def get_target_temperature
     get_temperature(0)
   end
@@ -25,10 +27,24 @@ class Temperature
     server_command("is_on") == "true"
   end
 
+  def set_target_temperature(temperature)
+    @temperatures = nil
+    Rails.logger.debug "Temperature " + temperature
+    server_command("set_temperature " + temperature) == "OK"
+  end
+
   def finalize(c)
     c.connection.close
   end
   
+  def get_last_server_command
+    @last_server_command
+  end
+
+  def get_last_server_response
+    @last_server_response
+  end
+
 private
   def get_temperature(i)
      get_temperatures
@@ -45,7 +61,8 @@ private
     if @connection == nil then
       @connection = TCPSocket.open "0.0.0.0", 4567
     end
+    @last_server_command = cmd
     @connection.puts cmd
-    @connection.gets.strip
+    @last_server_response = @connection.gets.strip
   end
 end

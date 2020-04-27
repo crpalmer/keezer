@@ -44,11 +44,13 @@ static double pid_factor = 2;
 static double minimum_temperature = 33;
 static bool heater_mode = false;
 static bool single_temperature = false;
+static char *params_filename;
 
-static const struct {
+static struct {
     const char *name;
     type_t      type;
     void       *value;
+    bool	was_set;
 } params[] = {
     { "temperature_filename",	TYPE_STRING,	&temperature_fname },
     { "fridge_temperature_filename", TYPE_STRING, &fridge_temperature_fname },
@@ -100,6 +102,7 @@ read_parameters(const char *fname)
 
 	for (i = 0; i < N_PARAMS; i++) {
 	    if (strcmp(name, params[i].name) == 0) {
+		params[i].was_set = true;
 		switch(params[i].type) {
 		case TYPE_STRING:
 		     free(*(void **) params[i].value);
@@ -115,6 +118,31 @@ read_parameters(const char *fname)
 		    break;
 	        }
 	    }
+	}
+    }
+
+    fclose(f);
+}
+
+static void
+save_parameters(const char *fname)
+{
+    FILE *f = fopen(fname, "w");
+
+    if (! f) {
+	perror(fname);
+	return;
+    }
+
+    for (int i = 0; i < N_PARAMS; i++) {
+	if (params[i].was_set) {
+	    fprintf(f, "%s ", params[i].name);
+	    switch(params[i].type) {
+	    case TYPE_STRING: fprintf(f, "%s", *(char **) params[i].value); break;
+	    case TYPE_DOUBLE: fprintf(f, "%f", *(double *) params[i].value); break;
+	    case TYPE_BOOLEAN: fprintf(f, "%s", *(bool *) params[i].value ? "true" : "false");
+	    }
+	    fprintf(f, "\n");
 	}
     }
 
@@ -308,6 +336,19 @@ server_cmd(void *unused, const char *cmd, struct sockaddr_in *addr, size_t addrl
 	pthread_mutex_unlock(&temp_lock);
     }
 
+    if (strncmp(cmd, "set_temperature ", 16) == 0) {
+	double temp = atof(&cmd[16]);
+	if (temp > 0 && temp > INVALID_LOW && temp < INVALID_HIGH) {
+	    response = strdup("OK");
+	    pthread_mutex_lock(&temp_lock);
+	    target_temperature = temp;
+	    save_parameters(params_filename);
+	    pthread_mutex_unlock(&temp_lock);
+	} else {
+	    response = maprintf("invalid temperature: [%s]", &cmd[16]);
+	}
+    }
+
     if (response == NULL) response = maprintf("invalid command: %s", cmd);
 
     return response;
@@ -324,7 +365,8 @@ main(int argc, char **argv)
 	exit(1);
     }
 
-    read_parameters(argv[1]);
+    params_filename = argv[1];
+    read_parameters(params_filename);
 
     pthread_mutex_init(&temp_lock, NULL);
     pthread_create(&temp_thread, NULL, temperature_main, NULL);

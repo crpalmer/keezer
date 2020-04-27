@@ -69,7 +69,7 @@
       Tower <%= @temperature.get_tower_temperature.round(1) %>
     </td>
     <td class="temperature-text">
-      Fermenter [@ <%= @temperature.get_target_temperature.round(0) %>]:
+      Fermenter [@ <%= link_to @temperature.get_target_temperature.round(0), temperature_edit_path %>]:
       <%= @temperature.get_chamber_temperature.round(1) %>,
       Wort <%= @temperature.get_wort_temperature.round(1) %>
       <% if @temperature.is_fridge_on then %>

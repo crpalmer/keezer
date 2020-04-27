@@ -7,6 +7,10 @@ Rails.application.routes.draw do
   resources :beers
   resources :taps
 
+  # Temperature editing
+  get 'temperature/edit' => 'temperature#edit'
+  post 'temperature/set' => 'temperature#set'
+
   # You can have the root of your site routed with "root"
   root 'keezer#index'
 

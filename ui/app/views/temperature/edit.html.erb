@@ -1,0 +1,11 @@
+<h1>Set Target Temperature</h1>
+
+<% if params["error"] != nil then %>
+  <h2> Error </h2>
+  <p><%= params["error"] %></p>
+<% end %>
+
+<%= form_for @temperature, url: temperature_set_path do |f| %>
+  Target Temperature: <%= f.text_field :target_temperature, { :value => @temperature.get_target_temperature } %> <% end %>
+
+<%= link_to 'Cancel', root_path %>
