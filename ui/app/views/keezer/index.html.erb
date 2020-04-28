@@ -3,13 +3,17 @@
   <tr class="tap-numbers">
     <% @taps.each do |tap| %>
       <td class="tap-number" style="width: <%= 100 / @taps.length %>%">
-        Tap <%= tap.tap_number %>
+        <%= link_to "Tap " + tap.tap_number.to_s, edit_tap_path(tap) %>
       </td>
     <% end %>
   </tr>
   <tr class="beer-info border">
     <% @taps.each do |tap| %>
-      <td class="border beer-name"><%= tap.beer.name %></td>
+      <td class="border beer-name">
+        <% if tap.beer.name != nil %>
+	  <%= link_to tap.beer.name, edit_beer_path(id: tap.beer.id.to_s) %>
+        <% end %>
+      </td>
     <% end %>
   </tr>
   <tr class="beer-info border">

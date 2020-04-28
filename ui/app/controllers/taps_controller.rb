@@ -15,6 +15,22 @@ class TapsController < ApplicationController
     redirect_to taps_path
   end
 
+  def edit
+    @tap = Tap.find(params[:id]);
+    @beers = Beer.order("name").all
+  end
+
+  def assign
+    @tap = Tap.find(params[:id])
+    @beer = Beer.find(params[:beer_id])
+    @tap.beer_id = @beer.id
+    if @tap.save then
+	redirect_to root_path
+    else
+	render edit_path
+    end
+  end
+
   def update
     @tap = Tap.find(params[:id])
     @tap.update(tap_params)

@@ -19,7 +19,7 @@ class BeersController < ApplicationController
   def update
     @beer = Beer.find(params[:id])
     if @beer.update(beer_params)
-      redirect_to @beer
+      redirect_to root_path
     else
       render 'edit'
     end
