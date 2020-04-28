@@ -1,6 +1,14 @@
 <h1>Edit Beer</h1>
 
-<%= form_for :beer, url: beer_path(@beer), method: :patch do |f| %>
+<% tap_id = params[:tap_id]
+   if tap_id != nil
+     update_path = update_beer_for_tap_path(@beer, tap_id)
+   else
+     update_path = update_beer_path(@beer)
+   end
+%>
+
+<%= form_for :beer, url: update_path, method: :post do |f| %>
   <table>
     <tr>
       <td><%= f.label :name %></td>
@@ -32,4 +40,3 @@
     </tr>
   </table>
 <% end %>
-

@@ -4,14 +4,24 @@ Rails.application.routes.draw do
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
-  resources :beers
-  resources :taps
+  # Beer management
+  get 'beers/new/:tap_id', to: 'beers#new', as: 'new_beer'
+  get 'beers/:id/edit', to: 'beers#edit', as: 'edit_beer'
+  get 'beers/:id/edit/:tap_id', to: 'beers#edit', as: 'edit_beer_for_tap'
+  delete 'beers/:id/delete/:tap_id', to: 'beers#delete', as: 'delete_beer_for_tap'
+  post 'beers/:id/update', to: 'beers#update', as: 'update_beer'
+  post 'beers/:id/update/:tap_id', to: 'beers#update', as: 'update_beer_for_tap'
+
+  # Tap management
+  get 'taps/new', to: 'taps#new', as: 'new_tap'
+  get 'taps/delete-last', to: 'taps#delete_last', as: 'delete_last_tap'
+  get 'taps/:id/edit', to: 'taps#edit', as: 'edit_tap'
+  put 'taps/:id/assign/:beer_id', to: 'taps#assign', as: 'assign_tap'
+  put 'taps/:id/unassign', to: 'taps#unassign', as: 'unassign_tap'
 
   # Temperature editing
   get 'temperature/edit' => 'temperature#edit'
   post 'temperature/set' => 'temperature#set'
-
-  put 'taps/:id/assign/:beer_id' => 'taps#assign'
 
   # You can have the root of your site routed with "root"
   root 'keezer#index'

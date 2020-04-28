@@ -1,0 +1,20 @@
+<table style="border-collapse: collapse">
+  <tr>
+    <td style="border: 10px white solid"><b>Name</b></td>
+    <td style="border: 10px white solid"><b>Brewer</b></td>
+  </tr>
+  <% @beers.each do |beer| %>
+    <tr>
+      <td style="padding: 5px"><%= beer.name %></td>
+      <td style="padding: 5px"><%= beer.brewer %></td>
+      <td style="padding: 5px"><%= link_to 'select', assign_tap_path(id: @tap, beer_id: beer), method: :put %></td>
+      <td style="padding: 5px"><%= link_to 'edit', edit_beer_for_tap_path(beer, @tap) %></td>
+      <td style="padding: 5px"><%= link_to 'delete', delete_beer_for_tap_path(beer, @tap), method: :delete %></td>
+    </tr>
+  <% end %>
+</table>
+<div style="border: 20px white solid">
+  <span style="padding: 20px"><%= link_to 'New beer', new_beer_path(@tap) %></span>
+  <span style="padding: 20px"><%= link_to 'Unassign tap', unassign_tap_path(@tap), method: :put %></span>
+  <span style="padding: 20px"><%= link_to 'Return to main display', root_path %></span>
+</div>

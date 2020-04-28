@@ -1,15 +1,13 @@
 class BeersController < ApplicationController
   def new
-  end
-
-  def index
-    @beers = Beer.order("name").all
-  end
-
-  def create
-    @beer = Beer.new(beer_params)
+    @beer = Beer.new
     @beer.save
-    redirect_to @beer
+    tap_id = params[:tap_id]
+    if tap_id != nil
+       redirect_to edit_beer_for_tap_path(id: @beer.id.to_s, tap_id: params[:tap_id])
+    else
+       render 'edit'
+    end
   end
 
   def edit
@@ -19,20 +17,16 @@ class BeersController < ApplicationController
   def update
     @beer = Beer.find(params[:id])
     if @beer.update(beer_params)
-      redirect_to root_path
+      redirect_after_update
     else
       render 'edit'
     end
   end
 
-  def destroy
+  def delete
     @beer = Beer.find(params[:id])
     @beer.destroy
-    redirect_to beers_path
-  end
-
-  def show
-    @beer = Beer.find(params[:id])
+    redirect_after_update
   end
 
   private
@@ -40,4 +34,12 @@ class BeersController < ApplicationController
       params.require(:beer).permit(:name, :brewer, :style, :ibu, :srm, :abv)
     end
 
+    def redirect_after_update
+      tap_id = params[:tap_id]
+      if tap_id != nil
+	redirect_to edit_tap_path(tap_id)
+      else
+        redirect_to root_path
+      end
+    end
 end
