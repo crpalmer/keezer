@@ -23,6 +23,10 @@ Rails.application.routes.draw do
   get 'temperature/edit' => 'temperature#edit'
   post 'temperature/set' => 'temperature#set'
 
+  # Fermenter mode editing
+  get 'temperature/fridge_mode' => 'temperature#fridge_mode'
+  get 'temperature/fermenter_mode' => 'temperature#fermenter_mode'
+
   # You can have the root of your site routed with "root"
   root 'keezer#index'
 

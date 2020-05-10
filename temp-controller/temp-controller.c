@@ -345,6 +345,24 @@ server_cmd(void *unused, const char *cmd, struct sockaddr_in *addr, size_t addrl
 	}
     }
 
+    if (strcmp(cmd, "is_fridge_mode") == 0) {
+	response = maprintf("%s", single_temperature ? "true" : "false");
+    }
+
+    if (strcmp(cmd, "set_fridge_mode") == 0) {
+	pthread_mutex_lock(&temp_lock);
+	single_temperature = true;
+	save_parameters(params_filename);
+	pthread_mutex_unlock(&temp_lock);
+    }
+
+    if (strcmp(cmd, "set_fermenter_mode") == 0) {
+	pthread_mutex_lock(&temp_lock);
+	single_temperature = false;
+	save_parameters(params_filename);
+	pthread_mutex_unlock(&temp_lock);
+    }
+
     if (response == NULL) response = maprintf("invalid command: %s", cmd);
 
     return response;

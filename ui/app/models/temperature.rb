@@ -27,10 +27,22 @@ class Temperature
     server_command("is_on") == "true"
   end
 
+  def is_fridge_mode
+    server_command("is_fridge_mode") == "true"
+  end
+
   def set_target_temperature(temperature)
     @temperatures = nil
     Rails.logger.debug "Temperature " + temperature
     server_command("set_temperature " + temperature) == "OK"
+  end
+
+  def set_fridge_mode
+    server_command("set_fridge_mode") == "OK"
+  end
+
+  def set_fermenter_mode
+    server_command("set_fermenter_mode") == "OK"
   end
 
   def finalize(c)
