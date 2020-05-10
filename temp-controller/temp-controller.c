@@ -50,7 +50,6 @@ static struct {
     const char *name;
     type_t      type;
     void       *value;
-    bool	was_set;
 } params[] = {
     { "temperature_filename",	TYPE_STRING,	&temperature_fname },
     { "fridge_temperature_filename", TYPE_STRING, &fridge_temperature_fname },
@@ -102,7 +101,6 @@ read_parameters(const char *fname)
 
 	for (i = 0; i < N_PARAMS; i++) {
 	    if (strcmp(name, params[i].name) == 0) {
-		params[i].was_set = true;
 		switch(params[i].type) {
 		case TYPE_STRING:
 		     free(*(void **) params[i].value);
@@ -135,15 +133,13 @@ save_parameters(const char *fname)
     }
 
     for (int i = 0; i < N_PARAMS; i++) {
-	if (params[i].was_set) {
-	    fprintf(f, "%s ", params[i].name);
-	    switch(params[i].type) {
-	    case TYPE_STRING: fprintf(f, "%s", *(char **) params[i].value); break;
-	    case TYPE_DOUBLE: fprintf(f, "%f", *(double *) params[i].value); break;
-	    case TYPE_BOOLEAN: fprintf(f, "%s", *(bool *) params[i].value ? "true" : "false");
-	    }
-	    fprintf(f, "\n");
+	fprintf(f, "%s ", params[i].name);
+	switch(params[i].type) {
+	case TYPE_STRING: fprintf(f, "%s", *(char **) params[i].value); break;
+	case TYPE_DOUBLE: fprintf(f, "%f", *(double *) params[i].value); break;
+	case TYPE_BOOLEAN: fprintf(f, "%s", *(bool *) params[i].value ? "true" : "false");
 	}
+	fprintf(f, "\n");
     }
 
     fclose(f);
