@@ -252,7 +252,7 @@ select_fridge_temperature_dual(double *temp)
     } else {
 	*temp = fridge_temperature;
     }
-    delta = delta_sign * (*temp - target_temperature);
+    delta = delta_sign * (temperature - target_temperature);
     if (delta < pid_threshold) return target_temperature;
     target = target_temperature - delta_sign * delta * pid_factor;
     if (target < minimum_temperature) return minimum_temperature;
